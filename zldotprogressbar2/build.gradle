@@ -5,8 +5,6 @@ group='com.github.czl0325'
 android {
     compileSdkVersion 27
 
-
-
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 27

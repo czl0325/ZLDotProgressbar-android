@@ -38,8 +38,8 @@ public class ZLDotProgressBar extends View {
     /**
      * 进度，必须<=mDotsCount
      */
-    private int oldProgress = -1;
-    private int newProgress;
+    private int oldProgress = 1;
+    private int newProgress = 1;
     /**
      * 目前已经进行的时间
      */
@@ -166,8 +166,11 @@ public class ZLDotProgressBar extends View {
             // 绘制变化的部分
             canvas.drawRect(start, rect.top+(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner),
                     start+params[0], rect.bottom-(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner), paint);
-            canvas.drawCircle(start+params[0], mDotsRadius, params[1], paint);
+            //canvas.drawCircle(start+params[0], mDotsRadius, params[1], paint);
             for (int i=0; i<mCircles.length; i++) {
+                if (newProgress == 1) {
+                    break;
+                }
                 if (i<newProgress) {
                     if (start+params[0] > (mCircles[i]+mDotsRadiusInner)) {
                         canvas.drawCircle(mCircles[i], mDotsRadius, mDotsRadiusInner, paint);
@@ -189,12 +192,17 @@ public class ZLDotProgressBar extends View {
             postInvalidate();
         } else {
             // 说明动画已经结束，我们只需要绘制正确的前景进度
+            Rect rc = new Rect(rect.left, rect.top+(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner),
+                    rect.left+mPartWidth*(newProgress-1), rect.bottom-(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner));
             canvas.drawRect(rect.left, rect.top+(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner),
                     rect.left+mPartWidth*(newProgress-1), rect.bottom-(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner), paint);
-            for (int i = 0; i < newProgress; i++) {
-                canvas.drawCircle(mCircles[i], mDotsRadius, mDotsRadiusInner, paint);
+            if (newProgress > 1) {
+                for (int i = 0; i < newProgress; i++) {
+                    canvas.drawCircle(mCircles[i], mDotsRadius, mDotsRadiusInner, paint);
+                }
             }
         }
+
 
         //写字
         paint.setColor(Color.WHITE);

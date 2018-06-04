@@ -2,6 +2,7 @@ package com.czl.zldotprogressbar;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 import com.czl.zldotprogressbar2.ZLDotProgressBar;
 
@@ -21,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+    }
+
+    public void start(View view) {
         progressBar.setNewProgress(3);
     }
 }
