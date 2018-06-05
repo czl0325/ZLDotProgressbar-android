@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
         progressBar = (ZLDotProgressBar)findViewById(R.id.progressbar);
         progressBar.setmTexts(Arrays.asList(new String[]{"已申请", "初审中", "预授结果", "复审中", "结束"}));
+        progressBar.setNewProgress(3);
     }
 
     @Override
@@ -25,6 +26,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void start(View view) {
-        progressBar.setNewProgress(3);
+        progressBar.setNewProgress(1);
     }
 }

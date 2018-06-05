@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
@@ -159,37 +160,67 @@ public class ZLDotProgressBar extends View {
         //调整画笔为前景色
         paint.setColor(mDotsFrontColor);
         if (newProgress != oldProgress) {
-            int start = rect.left;
-            //canvas.drawCircle(start, mDotsRadius, mDotsRadius, paint);
-            float percent = mInterpolator.getInterpolation(((float) mPartTime) / mSpeed);
-            int[] params = getParams(percent);
-            // 绘制变化的部分
-            canvas.drawRect(start, rect.top+(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner),
-                    start+params[0], rect.bottom-(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner), paint);
-            //canvas.drawCircle(start+params[0], mDotsRadius, params[1], paint);
-            for (int i=0; i<mCircles.length; i++) {
-                if (newProgress == 1) {
-                    break;
-                }
-                if (i<newProgress) {
-                    if (start+params[0] > (mCircles[i]+mDotsRadiusInner)) {
+            if (newProgress > oldProgress) {
+                //int start = rect.left;
+                int start = rect.left + mPartWidth*(oldProgress-1);
+                //绘制不变的部分
+                if (oldProgress > 1) {
+                    canvas.drawRect(rect.left, rect.top+(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner),
+                            rect.left+mPartWidth*(oldProgress-1), rect.bottom-(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner), paint);
+                    for (int i=0; i<oldProgress; i++) {
                         canvas.drawCircle(mCircles[i], mDotsRadius, mDotsRadiusInner, paint);
-                    } else if (start+params[0] > mCircles[i] && start+params[0] < mCircles[i]+mDotsRadiusInner) {
-                        canvas.drawCircle(mCircles[i], mDotsRadius, start+params[0]-mCircles[i], paint);
                     }
                 }
-//                if (start+params[0] > mCircles[i] && i<newProgress) {
-//                    canvas.drawCircle(mCircles[i], mDotsRadius, mDotsRadiusInner, paint);
-//                }
-            }
+                float percent = mInterpolator.getInterpolation(((float) mPartTime) / mSpeed);
+                int[] params = getParams(percent);
+                // 绘制变化的部分
+                canvas.drawRect(start, rect.top+(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner),
+                        start+params[0], rect.bottom-(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner), paint);
+                for (int i=0; i<mCircles.length; i++) {
+                    if (newProgress == 1) {
+                        break;
+                    }
+                    if (i<newProgress) {
+                        if (start+params[0] > (mCircles[i]+mDotsRadiusInner)) {
+                            canvas.drawCircle(mCircles[i], mDotsRadius, mDotsRadiusInner, paint);
+                        } else if (start+params[0] > mCircles[i] && start+params[0] < mCircles[i]+mDotsRadiusInner) {
+                            canvas.drawCircle(mCircles[i], mDotsRadius, start+params[0]-mCircles[i], paint);
+                        }
+                    }
+                }
 
-            if (mPartTime < mSpeed) {
-                mPartTime++;
-            } else {
-                mIsRunning = false;
-                oldProgress = newProgress;
+                if (mPartTime < mSpeed) {
+                    mPartTime++;
+                } else {
+                    mIsRunning = false;
+                    oldProgress = newProgress;
+                }
+                postInvalidate();
+            } else if (oldProgress > newProgress) {
+                float percent = mInterpolator.getInterpolation(((float) mPartTime) / mSpeed);
+                int[] params = getParams(percent);
+                // 绘制变化的部分
+                int point = rect.left+(oldProgress-1)*mPartWidth+params[0];//不断变化的右边的点
+                canvas.drawRect(rect.left, rect.top+(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner),
+                            point, rect.bottom-(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner), paint);
+                for (int i=0; i<mCircles.length; i++) {
+                    if (i<oldProgress) {
+                        if (point > (mCircles[i]+mDotsRadiusInner)) {
+                            canvas.drawCircle(mCircles[i], mDotsRadius, mDotsRadiusInner, paint);
+                        } else if (point > mCircles[i] && point < mCircles[i]+mDotsRadiusInner) {
+                            canvas.drawCircle(mCircles[i], mDotsRadius, point-mCircles[i], paint);
+                        }
+                    }
+                }
+
+                if (mPartTime < mSpeed) {
+                    mPartTime++;
+                } else {
+                    mIsRunning = false;
+                    oldProgress = newProgress;
+                }
+                postInvalidate();
             }
-            postInvalidate();
         } else {
             // 说明动画已经结束，我们只需要绘制正确的前景进度
             Rect rc = new Rect(rect.left, rect.top+(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner),
@@ -245,19 +276,18 @@ public class ZLDotProgressBar extends View {
      */
     private int[] getParams(float percent) {
         int[] params = new int[2];
-        if (newProgress > 1) {
+//        if (newProgress >= 1) {
             if (percent > 0.9) {
-                params[0] = mPartWidth * (newProgress-1);
+                params[0] = mPartWidth * (newProgress-oldProgress);
                 params[1] = (int) (((percent - 0.9) / 0.1) * (mDotsRadiusInner - mDotsProgressWidthHalfInner) + mDotsProgressWidthHalfInner);
             } else {
-                params[0] = (int) ((percent / 0.9) * (mPartWidth * (newProgress-1)));
+                params[0] = (int) ((percent / 0.9) * (mPartWidth * (newProgress-oldProgress)));
                 params[1] = mDotsProgressWidthHalfInner;
-
             }
-        } else {
-            params[0] = 0;
-            params[1] = (int) (percent * mDotsRadiusInner);
-        }
+//        } else {
+//            params[0] = 0;
+//            params[1] = (int) (percent * mDotsRadiusInner);
+//        }
         return params;
     }
 

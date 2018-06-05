@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.czl0325'
+//apply plugin: 'com.github.dcendents.android-maven'
+//apply plugin: 'com.novoda.bintray-release'
+//group='com.github.czl0325'
 
 android {
     compileSdkVersion 27
@@ -9,7 +10,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
-        versionName "0.0.4"
+        versionName "0.0.1"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -22,7 +23,59 @@ android {
         }
     }
 
+    lintOptions {
+        abortOnError false
+    }
 }
+
+allprojects {
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+        options.addStringOption('encoding', 'UTF-8')
+    }
+}
+
+////加上这些
+//tasks.withType(Javadoc) {
+//    options{
+//        encoding "UTF-8"
+//        charSet 'UTF-8'
+//        links "http://docs.oracle.com/javase/7/docs/api"
+//    }
+//}
+
+//ext {
+//    bintrayRepo = 'maven'
+//    bintrayName = 'ZLDotProgressbar'
+//
+//    publishedGroupId = 'com.github.czl0325'
+//    libraryName = 'ZLDotProgressbar'
+//    artifact = 'ZLDotProgressbar'
+//
+//    libraryDescription = 'a dot progressbar'
+//
+//    siteUrl = 'https://github.com/czl0325/ZLDotProgressbar-android'
+//    gitUrl = 'https://github.com/czl0325/ZLDotProgressbar-android.git'
+//
+//    libraryVersion = '0.0.1'
+//
+//    developerId = 'czl0325'
+//    developerName = 'czl0325'
+//    developerEmail = 'czl2106082@gmail.com'
+//
+//    licenseName = 'The Apache Software License, Version 2.0'
+//    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//    allLicenses = ["Apache-2.0"]
+//}
+
+//publish {
+//    userOrg = 'czl0325'      //bintray注册的用户名
+//    groupId = 'com.czl0325'         //compile引用时的第1部分groupId
+//    artifactId = 'ZLDotProgressbar'     //compile引用时的第2部分项目名
+//    publishVersion = '0.0.1'    //compile引用时的第3部分版本号
+//    desc = 'ZLDotProgressbar'
+//    website = 'https://github.com/czl0325/ZLDotProgressbar-android'
+//}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -31,4 +84,105 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+//项目主页
+def siteUrl = 'https://github.com/czl0325/ZLDotProgressbar-android'
+//项目的版本控制地址
+def gitUrl = 'https://github.com/czl0325/ZLDotProgressbar-android.git'
+
+//发布到组织名称名字，必须填写
+group = "com.github.czl0325"
+//发布到JCenter上的项目名字，必须填写
+def libName = "ZLDotProgressbar"
+// 版本号，下次更新是只需要更改版本号即可
+version = "0.0.1"
+/**  上面配置后上传至jcenter后的编译路径是这样的： compile 'cn.bluemobi.dylan:sqlitelibrary:1.0'  **/
+
+//生成源文件
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+//生成文档
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    options.encoding "UTF-8"
+    options.charSet 'UTF-8'
+    options.author true
+    options.version true
+    options.links "https://github.com/linglongxin24/FastDev/tree/master/mylibrary/docs/javadoc"
+    failOnError false
+}
+
+//文档打包成jar
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+//拷贝javadoc文件
+task copyDoc(type: Copy) {
+    from "${buildDir}/docs/"
+    into "docs"
+}
+//上传到jcenter所需要的源码文件
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+// 配置maven库，生成POM.xml文件
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'aar'
+                name 'a dot progressbar framework'
+                url siteUrl
+                licenses {
+                    license {
+                        name 'a dot progressbar framework'
+                        url 'https://github.com/czl0325/ZLDotProgressbar-android'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'czl'
+                        name 'czl0325'
+                        email '295183917@qq.com'
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+                }
+            }
+        }
+    }
+}
+
+//上传到jcenter
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+bintray {
+    user = properties.getProperty("bintray.user")    //读取 local.properties 文件里面的 bintray.user
+    key = properties.getProperty("bintray.apikey")   //读取 local.properties 文件里面的 bintray.apikey
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = "ZLDotProgressbar"    //发布到JCenter上的项目名字，必须填写
+        desc = 'a dot progressbar framework'    //项目描述
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true
+    }
 }
