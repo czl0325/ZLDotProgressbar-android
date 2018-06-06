@@ -1,13 +1,18 @@
 # ZLDotProgressbar-android
-安卓版时间节点的控件
 
+安卓版时间节点的控件，支持动画，支持前进和后退，可以设置节点数量和title。
  
 ![](https://github.com/czl0325/ZLDotProgressbar-android/blob/master/screen.gif)
-
  
-使用方法：
+# 导入
  
-xml 上：
+```
+implementation 'com.github.czl0325:zldotprogressbar2:0.0.2'
+```
+ 
+# 使用方法：
+ 
+## xml 上：
  
 ```
 <com.czl.zldotprogressbar2.ZLDotProgressBar
@@ -23,7 +28,7 @@ xml 上：
         />
 ```
  
-代码：
+## 代码：
 ```
     progressBar = (ZLDotProgressBar)findViewById(R.id.progressbar);
     progressBar.setmTexts(Arrays.asList(new String[]{"已申请", "初审中", "预授结果", "复审中", "结束"}));
