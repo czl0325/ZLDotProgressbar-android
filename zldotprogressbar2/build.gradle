@@ -1,7 +1,6 @@
 apply plugin: 'com.android.library'
 //apply plugin: 'com.github.dcendents.android-maven'
 //apply plugin: 'com.novoda.bintray-release'
-//group='com.github.czl0325'
 
 android {
     compileSdkVersion 27
@@ -10,7 +9,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
-        versionName "0.0.1"
+        versionName "0.0.2"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -35,48 +34,6 @@ allprojects {
     }
 }
 
-////加上这些
-//tasks.withType(Javadoc) {
-//    options{
-//        encoding "UTF-8"
-//        charSet 'UTF-8'
-//        links "http://docs.oracle.com/javase/7/docs/api"
-//    }
-//}
-
-//ext {
-//    bintrayRepo = 'maven'
-//    bintrayName = 'ZLDotProgressbar'
-//
-//    publishedGroupId = 'com.github.czl0325'
-//    libraryName = 'ZLDotProgressbar'
-//    artifact = 'ZLDotProgressbar'
-//
-//    libraryDescription = 'a dot progressbar'
-//
-//    siteUrl = 'https://github.com/czl0325/ZLDotProgressbar-android'
-//    gitUrl = 'https://github.com/czl0325/ZLDotProgressbar-android.git'
-//
-//    libraryVersion = '0.0.1'
-//
-//    developerId = 'czl0325'
-//    developerName = 'czl0325'
-//    developerEmail = 'czl2106082@gmail.com'
-//
-//    licenseName = 'The Apache Software License, Version 2.0'
-//    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-//    allLicenses = ["Apache-2.0"]
-//}
-
-//publish {
-//    userOrg = 'czl0325'      //bintray注册的用户名
-//    groupId = 'com.czl0325'         //compile引用时的第1部分groupId
-//    artifactId = 'ZLDotProgressbar'     //compile引用时的第2部分项目名
-//    publishVersion = '0.0.1'    //compile引用时的第3部分版本号
-//    desc = 'ZLDotProgressbar'
-//    website = 'https://github.com/czl0325/ZLDotProgressbar-android'
-//}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -85,9 +42,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
-
-//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
-//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
 
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
@@ -102,7 +56,7 @@ group = "com.github.czl0325"
 //发布到JCenter上的项目名字，必须填写
 def libName = "ZLDotProgressbar"
 // 版本号，下次更新是只需要更改版本号即可
-version = "0.0.1"
+version = "0.0.2"
 /**  上面配置后上传至jcenter后的编译路径是这样的： compile 'cn.bluemobi.dylan:sqlitelibrary:1.0'  **/
 
 //生成源文件
