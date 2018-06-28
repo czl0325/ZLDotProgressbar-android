@@ -9,7 +9,6 @@ import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
@@ -89,12 +88,12 @@ public class ZLDotProgressBar extends View {
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int wrap_width = Math.max(mDotsRadius*2+dp2px(50)*mDotsCount, width) ;
         int wrap_height = mDotsRadius*2;
-        if (mTexts.size() > 0) {
+        //if (mTexts.size() > 0) {
             wrap_height += dp2px(textmargin)+dp2px(16);
-        }
-        if (mSubtexts.size() > 0) {
+        //}
+        //if (mSubtexts.size() > 0) {
             wrap_height += dp2px(subtextmargin)+dp2px(12);
-        }
+        //}
 
         if (widthMode == MeasureSpec.AT_MOST && heightMode == MeasureSpec.AT_MOST) {
             setMeasuredDimension(wrap_width, wrap_height);
@@ -251,10 +250,16 @@ public class ZLDotProgressBar extends View {
         }
     }
 
-    public void setmTexts(List<String> texts) {
+    public void setTexts(List<String> texts) {
         mTexts.clear();
         mTexts.addAll(texts);
-        //postInvalidate();
+        postInvalidate();
+    }
+
+    public void setSubTexts(List<String> texts) {
+        mSubtexts.clear();
+        mSubtexts.addAll(texts);
+        postInvalidate();
     }
 
     /**
@@ -298,5 +303,11 @@ public class ZLDotProgressBar extends View {
             mIsRunning = true;
             postInvalidate();
         }
+    }
+
+    public void setDotsCount(int dotsCount) {
+        this.mDotsCount = dotsCount;
+        mCircles = new int[mDotsCount];
+        postInvalidate();
     }
 }
