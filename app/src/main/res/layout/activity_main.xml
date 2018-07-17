@@ -12,6 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:background="@color/colorAccent"
         app:barDotsCount="5"
         app:barDotsRadius="15dp"
         app:barProgressWidth="10dp"

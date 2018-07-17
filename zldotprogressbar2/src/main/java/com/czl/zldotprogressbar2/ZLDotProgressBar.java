@@ -88,12 +88,12 @@ public class ZLDotProgressBar extends View {
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int wrap_width = Math.max(mDotsRadius*2+dp2px(50)*mDotsCount, width) ;
         int wrap_height = mDotsRadius*2;
-        //if (mTexts.size() > 0) {
+        if (mTexts.size() > 0) {
             wrap_height += dp2px(textmargin)+dp2px(16);
-        //}
-        //if (mSubtexts.size() > 0) {
+        }
+        if (mSubtexts.size() > 0) {
             wrap_height += dp2px(subtextmargin)+dp2px(12);
-        //}
+        }
 
         if (widthMode == MeasureSpec.AT_MOST && heightMode == MeasureSpec.AT_MOST) {
             setMeasuredDimension(wrap_width, wrap_height);
@@ -253,12 +253,14 @@ public class ZLDotProgressBar extends View {
     public void setTexts(List<String> texts) {
         mTexts.clear();
         mTexts.addAll(texts);
+        requestLayout();
         postInvalidate();
     }
 
     public void setSubTexts(List<String> texts) {
         mSubtexts.clear();
         mSubtexts.addAll(texts);
+        requestLayout();
         postInvalidate();
     }
 

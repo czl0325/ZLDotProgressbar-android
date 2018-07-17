@@ -7,7 +7,7 @@
 # 导入
  
 ```
-implementation 'com.github.czl0325:zldotprogressbar2:0.0.3'
+implementation 'com.github.czl0325:zldotprogressbar2:0.0.4'
 ```
  
 # 使用方法：
