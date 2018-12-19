@@ -19,6 +19,8 @@ public class ZLDotProgressBar extends View {
     private List<String> mTexts = new ArrayList<>();
     private List<String> mSubtexts = new ArrayList<>();
 
+    private Paint paint;
+
     private static final int textmargin = 5;
     private static final int subtextmargin = 3;
 
@@ -34,6 +36,8 @@ public class ZLDotProgressBar extends View {
     private int mDotsRadiusInner;
     private int mDotsProgressWidthInner;
     private int mDotsProgressWidthHalfInner;
+
+    private boolean animate = true;
 
     /**
      * 进度，必须<=mDotsCount
@@ -76,6 +80,9 @@ public class ZLDotProgressBar extends View {
         mInterpolator = new LinearInterpolator();
 
         mCircles = new int[mDotsCount];
+        // 初始化画笔
+        paint = new Paint();
+        paint.setAntiAlias(true);
     }
 
     @Override
@@ -95,13 +102,12 @@ public class ZLDotProgressBar extends View {
             wrap_height += dp2px(subtextmargin)+dp2px(12);
         }
 
-        if (widthMode == MeasureSpec.AT_MOST && heightMode == MeasureSpec.AT_MOST) {
+        //if (heightMode == MeasureSpec.AT_MOST) {
             setMeasuredDimension(wrap_width, wrap_height);
-        } else if (widthMode == MeasureSpec.AT_MOST) {
-            setMeasuredDimension(wrap_width, height);
-        } else if (heightMode == MeasureSpec.AT_MOST) {
-            setMeasuredDimension(width, wrap_height);
-        }
+        //} else {
+        //    setMeasuredDimension(wrap_width, height);
+        //}
+
     }
 
     @Override
@@ -110,9 +116,6 @@ public class ZLDotProgressBar extends View {
         int height = getMeasuredHeight();
 
         mPartWidth = width / mDotsCount;
-        // 初始化画笔
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
         paint.setColor(mDotsBackColor);
         //画直线
         Rect rect = new Rect(mPartWidth/2,mDotsRadius-mDotsProgressWidthHalf,width-mPartWidth/2,mDotsRadius+mDotsProgressWidthHalf);
@@ -158,7 +161,7 @@ public class ZLDotProgressBar extends View {
         //以下绘制前景部分
         //调整画笔为前景色
         paint.setColor(mDotsFrontColor);
-        if (newProgress != oldProgress) {
+        if (newProgress != oldProgress && animate) {
             if (newProgress > oldProgress) {
                 //int start = rect.left;
                 int start = rect.left + mPartWidth*(oldProgress-1);
@@ -221,12 +224,16 @@ public class ZLDotProgressBar extends View {
                 postInvalidate();
             }
         } else {
+            if (!animate) {
+                mIsRunning = false;
+                oldProgress = newProgress;
+            }
             // 说明动画已经结束，我们只需要绘制正确的前景进度
             Rect rc = new Rect(rect.left, rect.top+(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner),
                     rect.left+mPartWidth*(newProgress-1), rect.bottom-(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner));
             canvas.drawRect(rect.left, rect.top+(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner),
                     rect.left+mPartWidth*(newProgress-1), rect.bottom-(mDotsProgressWidthHalf-mDotsProgressWidthHalfInner), paint);
-            if (newProgress > 1) {
+            if (newProgress >= 1) {
                 for (int i = 0; i < newProgress; i++) {
                     canvas.drawCircle(mCircles[i], mDotsRadius, mDotsRadiusInner, paint);
                 }
@@ -298,13 +305,22 @@ public class ZLDotProgressBar extends View {
         return params;
     }
 
-    public void setNewProgress(int newProgress) {
+    public void setNewProgress(int newProgress, boolean animate) {
         this.newProgress = newProgress;
+        this.animate = animate;
         if (this.newProgress <= mDotsCount && !mIsRunning && this.newProgress != oldProgress) {
             mPartTime = 0;
             mIsRunning = true;
             postInvalidate();
+        } else if (newProgress == 1 && oldProgress == 1) {
+            mPartTime = 0;
+            mIsRunning = true;
+            postInvalidate();
         }
+    }
+
+    public void setNewProgress(int newProgress) {
+        setNewProgress(newProgress, true);
     }
 
     public void setDotsCount(int dotsCount) {
